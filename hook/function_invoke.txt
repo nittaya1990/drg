@@ -14,45 +14,73 @@ void UFunction::Invoke(UObject* Obj, FFrame& Stack, RESULT_DECL)
 	return (*Func)(Obj, Stack, RESULT_PARAM);
 }
 
-48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 48 89 7C 24 20 41 56 48 83 EC 20 48 8B 59 20
+Finding through ProcessEvent:
 
-00007FF6F82751A0 | 48:895C24 08                          | mov qword ptr ss:[rsp+8],rbx                                           | void UFunction::Invoke(UObject* Obj, FFrame& Stack, RESULT_DECL)
-00007FF6F82751A5 | 48:896C24 10                          | mov qword ptr ss:[rsp+10],rbp                                          | [rsp+10]:",;,"
-00007FF6F82751AA | 48:897424 18                          | mov qword ptr ss:[rsp+18],rsi                                          |
-00007FF6F82751AF | 48:897C24 20                          | mov qword ptr ss:[rsp+20],rdi                                          |
-00007FF6F82751B4 | 41:56                                 | push r14                                                               |
-00007FF6F82751B6 | 48:83EC 20                            | sub rsp,20                                                             |
-00007FF6F82751BA | 48:8B59 20                            | mov rbx,qword ptr ds:[rcx+20]                                          | UClass* OuterClass = (UClass*)GetOuter();
-00007FF6F82751BE | 4D:8BF1                               | mov r14,r9                                                             | Result
-00007FF6F82751C1 | 49:8BF8                               | mov rdi,r8                                                             | FFrame
-00007FF6F82751C4 | 48:8BF2                               | mov rsi,rdx                                                            | UObject
-00007FF6F82751C7 | 48:8BE9                               | mov rbp,rcx                                                            | this (UFunction)
-00007FF6F82751CA | E8 A1D80D00                           | call fsd-win64-shipping.7FF6F8352A70                                   |
-00007FF6F82751CF | 48:85C0                               | test rax,rax                                                           |
-00007FF6F82751D2 | 74 28                                 | je fsd-win64-shipping.7FF6F82751FC                                     |
-00007FF6F82751D4 | 48:8D50 30                            | lea rdx,qword ptr ds:[rax+30]                                          |
-00007FF6F82751D8 | 48:6340 38                            | movsxd rax,dword ptr ds:[rax+38]                                       |
-00007FF6F82751DC | 3B43 38                               | cmp eax,dword ptr ds:[rbx+38]                                          |
-00007FF6F82751DF | 7F 1B                                 | jg fsd-win64-shipping.7FF6F82751FC                                     |
-00007FF6F82751E1 | 4C:8BC0                               | mov r8,rax                                                             |
-00007FF6F82751E4 | 48:8B43 30                            | mov rax,qword ptr ds:[rbx+30]                                          |
-00007FF6F82751E8 | 4A:3914C0                             | cmp qword ptr ds:[rax+r8*8],rdx                                        |
-00007FF6F82751EC | 75 0E                                 | jne fsd-win64-shipping.7FF6F82751FC                                    |
-00007FF6F82751EE | 48:8BD3                               | mov rdx,rbx                                                            |
-00007FF6F82751F1 | 48:8BCE                               | mov rcx,rsi                                                            |
-00007FF6F82751F4 | E8 87241400                           | call fsd-win64-shipping.7FF6F83B7680                                   | (UObject*)Obj->GetInterfaceAddress(OuterClass);
-00007FF6F82751F9 | 48:8BF0                               | mov rsi,rax                                                            |
-00007FF6F82751FC | 48:8B9F 88000000                      | mov rbx,qword ptr ds:[rdi+88]                                          |
-00007FF6F8275203 | 4D:8BC6                               | mov r8,r14                                                             |
-00007FF6F8275206 | 48:8BD7                               | mov rdx,rdi                                                            |
-00007FF6F8275209 | 48:89AF 88000000                      | mov qword ptr ds:[rdi+88],rbp                                          |
-00007FF6F8275210 | 48:8BCE                               | mov rcx,rsi                                                            |
-00007FF6F8275213 | FF95 D8000000                         | call qword ptr ss:[rbp+D8]                                             | (*Func)(Obj, Stack, RESULT_PARAM)
-00007FF6F8275219 | 48:8B6C24 38                          | mov rbp,qword ptr ss:[rsp+38]                                          |
-00007FF6F827521E | 48:8B7424 40                          | mov rsi,qword ptr ss:[rsp+40]                                          |
-00007FF6F8275223 | 48:899F 88000000                      | mov qword ptr ds:[rdi+88],rbx                                          |
-00007FF6F827522A | 48:8B5C24 30                          | mov rbx,qword ptr ss:[rsp+30]                                          |
-00007FF6F827522F | 48:8B7C24 48                          | mov rdi,qword ptr ss:[rsp+48]                                          |
-00007FF6F8275234 | 48:83C4 20                            | add rsp,20                                                             |
-00007FF6F8275238 | 41:5E                                 | pop r14                                                                |
-00007FF6F827523A | C3                                    | ret                                                                    |
+4D 8B CE 4C 8D 45 10 49 8B D4 48 8B CE E8
+
+00007FF7B5DCCDA0 | 4D:8BCE                  | mov r9,r14                                                                                                    |
+00007FF7B5DCCDA3 | 4C:8D45 10               | lea r8,qword ptr ss:[rbp+10]                                                                                  |
+00007FF7B5DCCDA7 | 49:8BD4                  | mov rdx,r12                                                                                                   |
+00007FF7B5DCCDAA | 48:8BCE                  | mov rcx,rsi                                                                                                   |
+00007FF7B5DCCDAD | E8 AE37EAFF              | call fsd-win64-shipping.7FF7B5C70560                                                                          |
+
+...beginning of ProcessEvent...
+00007FF7AB53D40B | 0FB786 B8000000                       | movzx eax,word ptr ds:[rsi+B8]                                         | ReturnValueOffset
+00007FF7AB53D412 | B9 FFFF0000                           | mov ecx,FFFF                                                           | MAX_uint16
+00007FF7AB53D417 | 66:3BC1                               | cmp ax,cx                                                              |
+00007FF7AB53D41A | 74 07                                 | je fsd-win64-shipping.7FF7AB53D423                                     |
+00007FF7AB53D41C | 44:0FB7F0                             | movzx r14d,ax                                                          |
+00007FF7AB53D420 | 4D:03F7                               | add r14,r15                                                            | (uint8*)Parms + Function->ReturnValueOffset
+00007FF7AB53D423 | 4D:8BCE                               | mov r9,r14                                                             | uint8* ReturnValueAddress = bHasReturnParam ? ((uint8*)Parms + Function->ReturnValueOffset) : nullptr;
+00007FF7AB53D426 | 4C:8D45 10                            | lea r8,qword ptr ss:[rbp+10]                                           |
+00007FF7AB53D42A | 49:8BD4                               | mov rdx,r12                                                            |
+00007FF7AB53D42D | 48:8BCE                               | mov rcx,rsi                                                            |
+00007FF7AB53D430 | E8 6B7DEBFF                           | call fsd-win64-shipping.7FF7AB3F51A0                                   | Function->Invoke(this, NewStack, ReturnValueAddress);
+00007FF7AB53D435 | 4D:85ED                               | test r13,r13                                                           |
+00007FF7AB53D438 | 75 7D                                 | jne fsd-win64-shipping.7FF7AB53D4B7                                    |
+00007FF7AB53D43A | 48:8B9E 80000000                      | mov rbx,qword ptr ds:[rsi+80]                                          |
+00007FF7AB53D441 | 48:85DB                               | test rbx,rbx                                                           |
+...end of process ProcessEvent
+
+
+UFunction::Invoke:
+00007FF7B5C70560 | 48:895C24 08             | mov qword ptr ss:[rsp+8],rbx                                                                                  |
+00007FF7B5C70565 | 48:896C24 10             | mov qword ptr ss:[rsp+10],rbp                                                                                 |
+00007FF7B5C7056A | 48:897424 18             | mov qword ptr ss:[rsp+18],rsi                                                                                 |
+00007FF7B5C7056F | 48:897C24 20             | mov qword ptr ss:[rsp+20],rdi                                                                                 |
+00007FF7B5C70574 | 41:56                    | push r14                                                                                                      |
+00007FF7B5C70576 | 48:83EC 20               | sub rsp,20                                                                                                    |
+00007FF7B5C7057A | 48:8B59 20               | mov rbx,qword ptr ds:[rcx+20]                                                                                 |
+00007FF7B5C7057E | 4D:8BF1                  | mov r14,r9                                                                                                    |
+00007FF7B5C70581 | 49:8BF8                  | mov rdi,r8                                                                                                    |
+00007FF7B5C70584 | 48:8BF2                  | mov rsi,rdx                                                                                                   |
+00007FF7B5C70587 | 48:8BE9                  | mov rbp,rcx                                                                                                   |
+00007FF7B5C7058A | E8 21120E00              | call fsd-win64-shipping.7FF7B5D517B0                                                                          |
+00007FF7B5C7058F | 48:85C0                  | test rax,rax                                                                                                  |
+00007FF7B5C70592 | 74 28                    | je fsd-win64-shipping.7FF7B5C705BC                                                                            |
+00007FF7B5C70594 | 48:8D50 30               | lea rdx,qword ptr ds:[rax+30]                                                                                 |
+00007FF7B5C70598 | 48:6340 38               | movsxd rax,dword ptr ds:[rax+38]                                                                              |
+00007FF7B5C7059C | 3B43 38                  | cmp eax,dword ptr ds:[rbx+38]                                                                                 |
+00007FF7B5C7059F | 7F 1B                    | jg fsd-win64-shipping.7FF7B5C705BC                                                                            |
+00007FF7B5C705A1 | 4C:8BC0                  | mov r8,rax                                                                                                    |
+00007FF7B5C705A4 | 48:8B43 30               | mov rax,qword ptr ds:[rbx+30]                                                                                 |
+00007FF7B5C705A8 | 4A:3914C0                | cmp qword ptr ds:[rax+r8*8],rdx                                                                               |
+00007FF7B5C705AC | 75 0E                    | jne fsd-win64-shipping.7FF7B5C705BC                                                                           |
+00007FF7B5C705AE | 48:8BD3                  | mov rdx,rbx                                                                                                   |
+00007FF7B5C705B1 | 48:8BCE                  | mov rcx,rsi                                                                                                   |
+00007FF7B5C705B4 | E8 27631500              | call fsd-win64-shipping.7FF7B5DC68E0                                                                          |
+00007FF7B5C705B9 | 48:8BF0                  | mov rsi,rax                                                                                                   |
+00007FF7B5C705BC | 48:8B9F 88000000         | mov rbx,qword ptr ds:[rdi+88]                                                                                 |
+00007FF7B5C705C3 | 4D:8BC6                  | mov r8,r14                                                                                                    |
+00007FF7B5C705C6 | 48:8BD7                  | mov rdx,rdi                                                                                                   |
+00007FF7B5C705C9 | 48:89AF 88000000         | mov qword ptr ds:[rdi+88],rbp                                                                                 |
+00007FF7B5C705D0 | 48:8BCE                  | mov rcx,rsi                                                                                                   |
+00007FF7B5C705D3 | FF95 D8000000            | call qword ptr ss:[rbp+D8]                                                                                    |
+00007FF7B5C705D9 | 48:8B6C24 38             | mov rbp,qword ptr ss:[rsp+38]                                                                                 |
+00007FF7B5C705DE | 48:8B7424 40             | mov rsi,qword ptr ss:[rsp+40]                                                                                 |
+00007FF7B5C705E3 | 48:899F 88000000         | mov qword ptr ds:[rdi+88],rbx                                                                                 |
+00007FF7B5C705EA | 48:8B5C24 30             | mov rbx,qword ptr ss:[rsp+30]                                                                                 |
+00007FF7B5C705EF | 48:8B7C24 48             | mov rdi,qword ptr ss:[rsp+48]                                                                                 |
+00007FF7B5C705F4 | 48:83C4 20               | add rsp,20                                                                                                    |
+00007FF7B5C705F8 | 41:5E                    | pop r14                                                                                                       |
+00007FF7B5C705FA | C3                       | ret                                                                                                           |

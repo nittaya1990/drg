@@ -131,7 +131,7 @@ impl Generator {
     }
 
     unsafe fn generate_enum(&mut self, enumeration: *mut UEnum) -> Result<(), Error> {
-        let variants = (*enumeration).Names.as_slice();
+        let variants = &(*enumeration).Names;
 
         let (last, rest) = if let Some(v) = variants.split_last() {
             v
@@ -155,7 +155,7 @@ impl Generator {
 
         writeln!(
             file,
-            "// {}\n#[repr(transparent)]\npub struct {name}({});\n\nimpl {name} {{",
+            "// {}\n#[repr(transparent)]\n#[derive(Copy, Clone, PartialEq, Eq)]\npub struct {name}({});\n\nimpl {name} {{",
             *enumeration,
             representation,
             name = (*enumeration).name(),
@@ -535,7 +535,11 @@ impl<W: Write> StructGenerator<W> {
                 // these lagged properties, we should emit a warning so the SDK
                 // user has some idea as to why some fields in some structures
                 // don't line up with what they're seeing in ReClass.
-                writeln!(self.out, "    // WARNING: Property \"{}\" thinks its offset is {}. We think its offset is {}.", (*property).base.NamePrivate, offset, self.offset)?;
+                writeln!(
+                    self.out,
+                    "    // WARNING: Property \"{}\" thinks its offset is {}. We think its offset is {}.",
+                    (*property).base.NamePrivate, Hex(offset), Hex(self.offset)
+                )?;
             }
 
             Ordering::Equal => {
@@ -557,7 +561,7 @@ impl<W: Write> StructGenerator<W> {
             Ordering::Greater => writeln!(
                 self.out,
                 "    // WARNING: This structure thinks its size is {}. We think its size is {}.",
-                struct_size, self.offset
+                Hex(struct_size), Hex(self.offset)
             )?,
 
             Ordering::Equal => {}

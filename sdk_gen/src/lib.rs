@@ -10,7 +10,7 @@ extern "C" {}
 #[link(name = "vcruntime")]
 extern "C" {}
 
-use common::{list, timer, win, GUObjectArray, NamePoolData, Timer};
+use common::{list, timer, win, GUObjectArray, Hex, NamePoolData, Timer};
 use core::ffi::c_void;
 use core::fmt::{self, Write};
 use core::str;
@@ -58,7 +58,11 @@ unsafe fn on_detach() {}
 unsafe fn run() -> Result<(), Error> {
     common::init_globals(&win::Module::current()?)?;
     dump_globals()?;
-    generate_sdk()?;
+
+    if cfg!(feature = "gen_sdk") {
+        generate_sdk()?;
+    }
+
     common::idle();
     Ok(())
 }
@@ -85,18 +89,14 @@ unsafe fn dump_names() -> Result<(), Error> {
 unsafe fn dump_objects() -> Result<(), Error> {
     let mut file = BufWriter::new(win::File::new(sdk_file!("global_objects.txt"))?);
 
-    for object in (*GUObjectArray).iter() {
-        if object.is_null() {
-            writeln!(&mut file, "skipped null object")?;
-        } else {
-            writeln!(
-                &mut file,
-                "[{}] {} {}",
-                (*object).InternalIndex,
-                *object,
-                object as usize
-            )?;
-        }
+    for object in (*GUObjectArray).iter().filter(|o| !o.is_null()) {
+        writeln!(
+            &mut file,
+            "[{}] {} {}",
+            (*object).InternalIndex,
+            *object,
+            Hex(object)
+        )?;
     }
 
     Ok(())
